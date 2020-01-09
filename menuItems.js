@@ -18,9 +18,12 @@ menuItemsRouter.param('menuItemId', (req, res, next, menuItemId) => {
   });
 });
 
+// url/api/menus/:menuId/menu-items/
 menuItemsRouter.get('/', (req, res, next) => {
   const sql = 'SELECT * FROM MenuItem WHERE MenuItem.menu_id = $menuId';
   const values = { $menuId: req.params.menuId};
+
+  // retrieve all rows with menuId
   db.all(sql, values, (error, menuItems) => {
     if (error) {
       next(error);
@@ -30,6 +33,7 @@ menuItemsRouter.get('/', (req, res, next) => {
   });
 });
 
+// url/api/menus/:menuId/menu-items/
 menuItemsRouter.post('/', (req, res, next) => {
   const name = req.body.menuItem.name,
         description = req.body.menuItem.description,
@@ -56,6 +60,7 @@ menuItemsRouter.post('/', (req, res, next) => {
         $menuId: menuId
       };
 
+      // insert new row into MenuItem table
       db.run(sql, values, function(error) {
         if (error) {
           next(error);
@@ -70,6 +75,7 @@ menuItemsRouter.post('/', (req, res, next) => {
   });
 });
 
+// url/api/menus/:menuId/menu-items/:menuItemId
 menuItemsRouter.put('/:menuItemId', (req, res, next) => {
   const name = req.body.menuItem.name,
         description = req.body.menuItem.description,
@@ -98,6 +104,7 @@ menuItemsRouter.put('/:menuItemId', (req, res, next) => {
         $menuItemId: req.params.menuItemId
       };
 
+      // update row in MenuItem table
       db.run(sql, values, function(error) {
         if (error) {
           next(error);
@@ -112,10 +119,13 @@ menuItemsRouter.put('/:menuItemId', (req, res, next) => {
   });
 });
 
+// url/api/menus/:menuId/menu-items/:menuItemId
+
 menuItemsRouter.delete('/:menuItemId', (req, res, next) => {
   const sql = 'DELETE FROM MenuItem WHERE MenuItem.id = $menuItemId';
   const values = {$menuItemId: req.params.menuItemId};
 
+  // delete row from MenuItem table
   db.run(sql, values, (error) => {
     if (error) {
       next(error);

@@ -21,8 +21,10 @@ menusRouter.param('menuId', (req, res, next, menuId) => {
   });
 });
 
+//url/api/menus/:menuId/menu-items
 menusRouter.use('/:menuId/menu-items', menuItemsRouter);
 
+// url/api/menus/
 menusRouter.get('/', (req, res, next) => {
   db.all('SELECT * FROM Menu', (err, menus) => {
     if (err) {
@@ -33,10 +35,12 @@ menusRouter.get('/', (req, res, next) => {
   });
 });
 
+// url/api/menus/:menuId
 menusRouter.get('/:menuId', (req, res, next) => {
   res.status(200).json({menu: req.menu});
 });
 
+// url/api/menus/
 menusRouter.post('/', (req, res, next) => {
   const title = req.body.menu.title;
   if (!title) {
@@ -48,6 +52,7 @@ menusRouter.post('/', (req, res, next) => {
     $title: title
   };
 
+  // insert new row into into Menu table
   db.run(sql, values, function(error) {
     if (error) {
       next(error);
@@ -60,6 +65,7 @@ menusRouter.post('/', (req, res, next) => {
   });
 });
 
+// url/api/menus/
 menusRouter.put('/:menuId', (req, res, next) => {
   const title = req.body.menu.title;
   if (!title) {
@@ -72,6 +78,7 @@ menusRouter.put('/:menuId', (req, res, next) => {
     $menuId: req.params.menuId
   };
 
+  // update row in Menu table
   db.run(sql, values, (error) => {
     if (error) {
       next(error);
@@ -84,9 +91,12 @@ menusRouter.put('/:menuId', (req, res, next) => {
   });
 });
 
+
 menusRouter.delete('/:menuId', (req, res, next) => {
+
   const menuItemSql = 'SELECT * FROM MenuItem WHERE MenuItem.menu_id = $menuId';
   const menuItemValues = {$menuId: req.params.menuId};
+
   db.get(menuItemSql, menuItemValues, (error, menuItem) => {
     if (error) {
       next(error);
@@ -96,6 +106,7 @@ menusRouter.delete('/:menuId', (req, res, next) => {
       const deleteSql = 'DELETE FROM Menu WHERE Menu.id = $menuId';
       const deleteValues = {$menuId: req.params.menuId};
 
+      // delete row in Menu table
       db.run(deleteSql, deleteValues, (error) => {
         if (error) {
           next(error);

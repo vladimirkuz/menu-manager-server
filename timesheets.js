@@ -4,6 +4,7 @@ const timesheetsRouter = express.Router({mergeParams: true});
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
+// for :/timesheetId parameter
 timesheetsRouter.param('timesheetId', (req, res, next, timesheetId) => {
   const sql = 'SELECT * FROM Timesheet WHERE Timesheet.id = $timesheetId';
   const values = {$timesheetId: timesheetId};
@@ -18,9 +19,12 @@ timesheetsRouter.param('timesheetId', (req, res, next, timesheetId) => {
   });
 });
 
+// url/api/employees/:employeeId/timesheets/
 timesheetsRouter.get('/', (req, res, next) => {
   const sql = 'SELECT * FROM Timesheet WHERE Timesheet.employee_id = $employeeId';
   const values = { $employeeId: req.params.employeeId};
+
+  // return all rows from Timesheet table
   db.all(sql, values, (error, timesheets) => {
     if (error) {
       next(error);
@@ -30,6 +34,7 @@ timesheetsRouter.get('/', (req, res, next) => {
   });
 });
 
+// url/api/employees/:employeeId/timesheets/
 timesheetsRouter.post('/', (req, res, next) => {
   const hours = req.body.timesheet.hours,
         rate = req.body.timesheet.rate,
@@ -48,6 +53,7 @@ timesheetsRouter.post('/', (req, res, next) => {
     $employeeId: employeeId
   };
 
+  // add new row to Timesheet table
   db.run(sql, values, function(error) {
     if (error) {
       next(error);
@@ -60,6 +66,7 @@ timesheetsRouter.post('/', (req, res, next) => {
   });
 });
 
+// url/api/employees/:employeeId/timesheets/:timesheetId
 timesheetsRouter.put('/:timesheetId', (req, res, next) => {
   const hours = req.body.timesheet.hours,
         rate = req.body.timesheet.rate,
@@ -79,6 +86,7 @@ timesheetsRouter.put('/:timesheetId', (req, res, next) => {
     $timesheetId: req.params.timesheetId
   };
 
+  // update row in Timesheet table
   db.run(sql, values, function(error) {
     if (error) {
       next(error);
@@ -91,10 +99,12 @@ timesheetsRouter.put('/:timesheetId', (req, res, next) => {
   });
 });
 
+// url/api/employees/:employeeId/timesheets/:timesheetId
 timesheetsRouter.delete('/:timesheetId', (req, res, next) => {
   const sql = 'DELETE FROM Timesheet WHERE Timesheet.id = $timesheetId';
   const values = {$timesheetId: req.params.timesheetId};
 
+  // delete row from Timesheet table
   db.run(sql, values, (error) => {
     if (error) {
       next(error);
